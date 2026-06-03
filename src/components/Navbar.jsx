@@ -1,76 +1,121 @@
-import { useState } from 'react';
-import { Link } from 'react-scroll';
-import { FaBars, FaTimes } from 'react-icons/fa';
+"use client";
 
-const navItems = [
-  { label: 'Projects', target: 'projects' },
-  { label: 'Academic', target: 'academic' },
-  { label: 'Skills', target: 'skills' },
-  { label: 'About', target: 'about' },
-  { label: 'Contact', target: 'contact' },
-];
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import AdminPanel from './AdminPanel';
 
-function Navbar() {
-  const [open, setOpen] = useState(false);
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [ownerTapCount, setOwnerTapCount] = useState(0);
+  const [lastOwnerTap, setLastOwnerTap] = useState(0);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { name: 'Profile', href: '#home' },
+    { name: 'Projects', href: '#projects' },
+    { name: 'Skills', href: '#skills' },
+    { name: 'Academic', href: '#academic' },
+    { name: 'Journey', href: '#timeline' },
+    { name: 'Contact', href: '#contact' },
+  ];
+
+  const handleScrollTo = (e, href) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleOwnerClick = (event) => {
+    handleScrollTo(event, '#home');
+
+    const now = Date.now();
+    const nextCount = now - lastOwnerTap > 2000 ? 1 : ownerTapCount + 1;
+
+    setLastOwnerTap(now);
+    setOwnerTapCount(nextCount);
+
+    if (nextCount >= 10) {
+      setOwnerTapCount(0);
+      setIsAdminOpen(true);
+    }
+  };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-slate-950/70 backdrop-blur-xl">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8 lg:px-12">
-        <Link
-          to="hero"
-          smooth
-          duration={600}
-          className="cursor-pointer text-lg font-bold tracking-wide"
-        >
-          <span className="gradient-text">Kunal</span>
-        </Link>
-
-        <div className="hidden items-center gap-7 md:flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.target}
-              to={item.target}
-              smooth
-              duration={650}
-              offset={-72}
-              className="cursor-pointer text-sm font-medium text-slate-300 transition hover:text-white"
+    <header 
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        scrolled ? 'bg-white/95 border-b border-slate-200 shadow-sm py-3' : 'bg-white/90 border-b border-slate-200 py-4'
+      }`}
+    >
+      <div className="container mx-auto px-6 flex justify-between items-center">
+        <a href="#home" onClick={handleOwnerClick} className="text-xl font-bold text-linkedin">
+          Kunal Suvo Saha
+        </a>
+        
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex gap-8">
+          {navLinks.map((link, i) => (
+            <motion.a
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              key={link.name}
+              href={link.href}
+              onClick={(e) => handleScrollTo(e, link.href)}
+              className="text-sm font-medium text-slate-600 hover:text-linkedin transition-colors"
             >
-              {item.label}
-            </Link>
+              {link.name}
+            </motion.a>
           ))}
-        </div>
+        </nav>
 
-        <button
-          type="button"
+        {/* Mobile Nav Toggle */}
+        <button 
+          className="md:hidden text-slate-700 p-2"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle navigation menu"
-          onClick={() => setOpen((current) => !current)}
-          className="grid size-10 place-items-center rounded-md border border-white/10 text-slate-100 md:hidden"
         >
-          {open ? <FaTimes /> : <FaBars />}
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {isMobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
         </button>
-      </nav>
+      </div>
 
-      {open && (
-        <div className="border-t border-white/10 bg-slate-950/95 px-5 py-4 md:hidden">
-          <div className="mx-auto flex max-w-6xl flex-col gap-3">
-            {navItems.map((item) => (
-              <Link
-                key={item.target}
-                to={item.target}
-                smooth
-                duration={650}
-                offset={-72}
-                onClick={() => setOpen(false)}
-                className="cursor-pointer rounded-md px-3 py-3 text-sm font-medium text-slate-200 transition hover:bg-white/10"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <motion.div 
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="md:hidden bg-white border border-slate-200 shadow-lg mt-2 mx-4 rounded-lg overflow-hidden flex flex-col"
+        >
+          {navLinks.map((link) => (
+            <a
+              key={link.name}
+              href={link.href}
+              onClick={(e) => handleScrollTo(e, link.href)}
+              className="px-6 py-4 border-b border-slate-100 text-slate-700 hover:text-linkedin hover:bg-slate-50"
+            >
+              {link.name}
+            </a>
+          ))}
+        </motion.div>
       )}
+      <AdminPanel open={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
     </header>
   );
 }
-
-export default Navbar;

@@ -1,93 +1,128 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
-import SectionHeading from './SectionHeading.jsx';
-import { projects } from '../data/projects.js';
+import RemoteImage from './RemoteImage';
+import SectionHeading from './SectionHeading';
+import { SiGithub } from 'react-icons/si';
+import { FiExternalLink } from 'react-icons/fi';
 
-const openInNewTab = (url) => (event) => {
-  if (!url || url === '#') return;
+export default function Projects() {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  event.preventDefault();
-  window.open(url, '_blank', 'noopener,noreferrer');
-};
+  useEffect(() => {
+    loadProjects();
+    window.addEventListener('portfolio-projects-updated', loadProjects);
 
-function Projects() {
+    return () => window.removeEventListener('portfolio-projects-updated', loadProjects);
+  }, []);
+
+  async function loadProjects() {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/projects');
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Unable to load projects.');
+      setProjects(data.projects || []);
+    } catch (err) {
+      setError(err.message);
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <section id="projects" className="section-padding">
-      <div className="section-shell">
-        <SectionHeading
-          eyebrow="Projects"
-          title="Selected work and build concepts"
-          description="Placeholder project cards are ready to replace with real demos, repositories, and screenshots as the portfolio grows."
-        />
+    <section id="projects" className="py-20 px-6 relative">
+      <div className="container mx-auto max-w-5xl">
+        <SectionHeading title="Projects" subtitle="A focused look at the applications I have built and the technologies behind them." />
+        
+        {loading && (
+          <div className="glass-card rounded-lg p-8 text-center text-slate-600">
+            Loading projects...
+          </div>
+        )}
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        {!loading && error && (
+          <div className="glass-card rounded-lg p-8 text-center">
+            <p className="font-semibold text-slate-950">Projects are not connected yet.</p>
+            <p className="mt-2 text-sm text-slate-600">{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && !projects.length && (
+          <div className="glass-card rounded-lg p-8 text-center text-slate-600">
+            No enabled projects yet.
+          </div>
+        )}
+
+        {!loading && !error && projects.length > 0 && (
+        <div className="flex flex-col gap-6">
           {projects.map((project, index) => (
-            <motion.article
-              key={project.title}
-              className="group overflow-hidden rounded-lg border border-white/10 bg-white/[0.06] backdrop-blur-xl"
-              initial={{ opacity: 0, y: 36 }}
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ delay: index * 0.12, duration: 0.6, ease: 'easeOut' }}
-              whileHover={{ y: -8 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="glass-card rounded-lg overflow-hidden grid md:grid-cols-[280px_1fr] group"
             >
-              {/* Replace these image URLs with real project screenshots. */}
-              <div className="relative aspect-[16/10] overflow-hidden bg-slate-800">
-                <img
+              <div className="relative min-h-56 overflow-hidden bg-slate-100">
+                <RemoteImage
                   src={project.image}
-                  alt={`${project.title} preview`}
-                  className="h-full w-full object-cover opacity-80 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
-                  loading="lazy"
+                  alt={project.title}
+                  sizes="(max-width: 768px) 100vw, 280px"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent" />
               </div>
+              
+              <div className="p-6 md:p-8 flex flex-col">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div>
+                    <p className="text-sm font-semibold text-linkedin mb-1">Project {index + 1}</p>
+                    <h3 className="text-2xl font-bold text-slate-950">{project.title}</h3>
+                  </div>
+                </div>
 
-              <div className="p-6">
-                <h3 className="text-xl font-bold">{project.title}</h3>
-                <p className="mt-3 min-h-24 leading-7 text-slate-300">
-                  {project.description}
-                </p>
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {project.stack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-md border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold text-sky-100"
-                    >
+                <p className="text-slate-600 leading-relaxed mb-5">{project.description}</p>
+                
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {project.technologies.map(tech => (
+                    <span key={tech} className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-linkedin">
                       {tech}
                     </span>
                   ))}
                 </div>
-
-                <div className="mt-6 flex gap-3">
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
+                
+                <div className="flex flex-wrap gap-3 mt-auto">
+                  <a 
+                    href={project.liveLink} 
+                    target="_blank" 
                     rel="noopener noreferrer"
-                    onClick={openInNewTab(project.liveUrl)}
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-sky-200 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-pink-200"
+                    className="flex items-center justify-center gap-2 bg-linkedin hover:bg-linkedin-dark text-white px-5 py-2.5 rounded-md transition-colors text-sm font-semibold"
                   >
-                    <FaExternalLinkAlt />
-                    Live Demo
+                    <FiExternalLink /> Live Demo
                   </a>
-                  <a
-                    href={project.repoUrl}
-                    target="_blank"
+                  <a 
+                    href={project.githubLink} 
+                    target="_blank" 
                     rel="noopener noreferrer"
-                    onClick={openInNewTab(project.repoUrl)}
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-white/15 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/10"
+                    className="flex items-center justify-center gap-2 border border-slate-300 hover:border-linkedin hover:text-linkedin text-slate-700 px-4 py-2.5 rounded-md transition-colors text-sm font-semibold"
                   >
-                    <FaGithub />
-                    GitHub
+                    <SiGithub size={18} /> Code
                   </a>
                 </div>
               </div>
-            </motion.article>
+            </motion.div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );
 }
-
-export default Projects;

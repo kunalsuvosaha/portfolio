@@ -1,38 +1,55 @@
+"use client";
+
 import { motion } from 'framer-motion';
-import SectionHeading from './SectionHeading.jsx';
-import { skills } from '../data/skills.js';
+import SectionHeading from './SectionHeading';
+import { skills } from '../data/skills';
 
-function Skills() {
+export default function Skills() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+  };
+
   return (
-    <section id="skills" className="section-padding bg-white/[0.025]">
-      <div className="section-shell">
-        <SectionHeading
-          eyebrow="Skills"
-          title="Tools I use to craft modern web experiences"
-          description="A growing toolkit across frontend foundations, React development, version control, deployment, and backend learning."
-        />
-
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {skills.map(({ name, icon: Icon }, index) => (
+    <section id="skills" className="py-20 px-6 relative bg-white border-y border-slate-200">
+      <div className="container mx-auto max-w-5xl">
+        <SectionHeading title="Skills" subtitle="Technologies and tools I use to build responsive, reliable web interfaces." />
+        
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+        >
+          {skills.map((skill) => (
             <motion.div
-              key={name}
-              className="group rounded-lg border border-white/10 bg-slate-900/70 p-5 text-center transition hover:border-sky-200/40 hover:bg-white/[0.08] hover:shadow-2xl hover:shadow-sky-500/10"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ delay: index * 0.04, duration: 0.5, ease: 'easeOut' }}
-              whileHover={{ y: -6, scale: 1.03 }}
+              key={skill.name}
+              variants={itemVariants}
+              whileHover={{ y: -3 }}
+              className="border border-slate-200 bg-slate-50 flex flex-col items-center justify-center p-5 rounded-lg group cursor-pointer hover:border-linkedin/40 hover:bg-white hover:shadow-sm transition-all"
             >
-              <div className="mx-auto mb-4 grid size-14 place-items-center rounded-md bg-gradient-to-br from-violet-300/15 via-sky-300/15 to-pink-300/15 text-3xl text-sky-100 transition group-hover:text-pink-100">
-                <Icon />
+              <div 
+                className="text-4xl mb-3 opacity-90 group-hover:opacity-100 transition-all duration-300"
+                style={{ color: skill.color || '#0530ad' }}
+              >
+                <skill.icon />
               </div>
-              <h3 className="font-semibold text-slate-100">{name}</h3>
+              <span className="text-sm font-semibold text-slate-700 group-hover:text-linkedin transition-colors">
+                {skill.name}
+              </span>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
-
-export default Skills;

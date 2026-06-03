@@ -1,26 +1,30 @@
-export const timelineItems = [
+export const timeline = [
   {
-    label: 'School',
-    title: 'Built the academic foundation',
-    description:
-      'Developed core discipline, curiosity, and the first interest in computers and digital problem solving.',
+    id: 1,
+    year: 'Present',
+    title: 'Full-Stack Developer Journey',
+    institution: 'Self-Taught & Ongoing Learning',
+    description: 'Actively building MERN stack applications and focusing on modern frontend frameworks like Next.js.'
   },
   {
-    label: 'BCA',
-    title: 'Started the software path',
-    description:
-      'Learned programming fundamentals, databases, web basics, and the practical mindset needed for development.',
+    id: 2,
+    year: '2023 - 2025 (Expected)',
+    title: 'Master of Computer Applications (MCA)',
+    institution: 'University Name',
+    description: 'Advanced studies in computer science, software engineering, and application development.'
   },
   {
-    label: 'MCA',
-    title: 'Advanced computer applications',
-    description:
-      'Strengthened software engineering concepts while exploring modern development workflows and project building.',
+    id: 3,
+    year: '2020 - 2023',
+    title: 'Bachelor of Computer Applications (BCA)',
+    institution: 'College Name',
+    description: 'Graduated with a strong foundation in programming, database management, and web technologies.'
   },
   {
-    label: 'Now',
-    title: 'Frontend and MERN learning journey',
-    description:
-      'Focused on React, Tailwind CSS, full-stack fundamentals, and creative web experiences with polished interfaces.',
-  },
+    id: 4,
+    year: '2020',
+    title: 'Higher Secondary School',
+    institution: 'School Name',
+    description: 'Completed schooling with a focus on science and mathematics.'
+  }
 ];

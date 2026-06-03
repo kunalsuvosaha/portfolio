@@ -1,23 +1,30 @@
+"use client";
+
 import { motion } from 'framer-motion';
 
-function SectionHeading({ eyebrow, title, description }) {
+export default function SectionHeading({ title, subtitle }) {
   return (
-    <motion.div
-      className="mx-auto mb-12 max-w-2xl text-center"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.35 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
-      <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-sky-200">
-        {eyebrow}
-      </p>
-      <h2 className="text-3xl font-bold sm:text-4xl">{title}</h2>
-      {description && (
-        <p className="mt-4 text-base leading-7 text-slate-300">{description}</p>
+    <div className="text-center mb-16">
+      <motion.h2 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="text-3xl md:text-4xl font-bold mb-4 text-slate-950"
+      >
+        {title}
+      </motion.h2>
+      {subtitle && (
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-slate-600 text-lg max-w-2xl mx-auto"
+        >
+          {subtitle}
+        </motion.p>
       )}
-    </motion.div>
+    </div>
   );
 }
-
-export default SectionHeading;

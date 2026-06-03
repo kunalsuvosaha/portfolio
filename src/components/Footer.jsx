@@ -1,9 +1,13 @@
-function Footer() {
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
+  
   return (
-    <footer className="border-t border-white/10 px-5 py-8 text-center text-sm text-slate-400 sm:px-8 lg:px-12">
-      <p>© 2026 Kunal Suvo Saha. Built with React, Vite, Tailwind CSS, and Framer Motion.</p>
+    <footer className="py-8 border-t border-slate-200 bg-white">
+      <div className="container mx-auto px-6 text-center">
+        <p className="text-slate-500 text-sm">
+          &copy; {currentYear} Kunal Suvo Saha. Built with Next.js & Tailwind CSS.
+        </p>
+      </div>
     </footer>
   );
 }
-
-export default Footer;

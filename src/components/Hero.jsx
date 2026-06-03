@@ -1,146 +1,130 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-scroll';
-import { FaEnvelope, FaGithub, FaLinkedinIn } from 'react-icons/fa';
+import RemoteImage from './RemoteImage';
+import { SiGithub, SiGmail } from 'react-icons/si';
+import { FaLinkedin } from 'react-icons/fa';
+import { FiMapPin, FiBriefcase } from 'react-icons/fi';
 
-const socialLinks = [
-  { label: 'GitHub', href: 'https://github.com/kunalsuvosaha', icon: FaGithub },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/kunalsaha07/', icon: FaLinkedinIn },
-  { label: 'Email', href: 'mailto: kunalsuvosaha@gmail.com', icon: FaEnvelope },
-];
+export default function Hero() {
+  const [settings, setSettings] = useState({});
 
-function Hero() {
+  useEffect(() => {
+    loadSettings();
+    window.addEventListener('portfolio-settings-updated', loadSettings);
+
+    return () => window.removeEventListener('portfolio-settings-updated', loadSettings);
+  }, []);
+
+  async function loadSettings() {
+    try {
+      const response = await fetch('/api/site-settings');
+      const data = await response.json();
+      if (response.ok) {
+        setSettings(data.settings || {});
+      }
+    } catch {
+      setSettings({});
+    }
+  }
+
+  const handleScrollTo = (e, href) => {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <section
-      id="hero"
-      className="relative flex min-h-screen items-center px-5 pb-20 pt-32 sm:px-8 lg:px-12"
-    >
-      <div className="absolute inset-0 overflow-hidden">
+    <section id="home" className="min-h-screen flex items-center pt-24 pb-12 px-6">
+      <div className="container mx-auto max-w-5xl">
         <motion.div
-          className="absolute left-[-8rem] top-24 h-72 w-72 rounded-full bg-violet-400/25 blur-3xl"
-          animate={{ x: [0, 45, 0], y: [0, 30, 0], scale: [1, 1.08, 1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute right-[-7rem] top-40 h-80 w-80 rounded-full bg-sky-300/20 blur-3xl"
-          animate={{ x: [0, -38, 0], y: [0, 26, 0], scale: [1, 1.12, 1] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute bottom-12 left-1/2 h-64 w-64 rounded-full bg-pink-300/15 blur-3xl"
-          animate={{ x: ['-50%', '-42%', '-50%'], y: [0, -24, 0] }}
-          transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      </div>
-
-      <div className="section-shell relative grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
-        <motion.div
-          initial={{ opacity: 0, y: 34 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: 'easeOut' }}
+          transition={{ duration: 0.8 }}
+          className="glass-card overflow-hidden rounded-lg"
         >
-          <motion.p
-            className="mb-4 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-sky-100 backdrop-blur"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.55 }}
-          >
-            Available for Full-Stack opportunities
-          </motion.p>
-          <motion.h1
-            className="text-4xl font-black leading-tight sm:text-6xl lg:text-7xl"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.7 }}
-          >
-            Kunal Suvo Saha
-          </motion.h1>
-          <motion.p
-            className="gradient-text mt-5 text-xl font-semibold sm:text-2xl"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.7 }}
-          >
-            Full Stack Developer
-          </motion.p>
-          <motion.p
-            className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45, duration: 0.7 }}
-          >
-            I build responsive, user-friendly web interfaces with React and
-            Tailwind CSS while growing into full-stack development through the
-            MERN ecosystem.
-          </motion.p>
+          <div className="relative h-40 overflow-hidden bg-gradient-to-r from-linkedin via-[#315fda] to-slate-500">
+            {settings.heroBackgroundImage?.url && (
+              <RemoteImage
+                src={settings.heroBackgroundImage.url}
+                alt={settings.heroBackgroundImage.alt || 'Portfolio hero background'}
+                priority
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                className="object-cover"
+              />
+            )}
+            <div className="absolute inset-0 bg-[#0530ad]/25" />
+          </div>
 
-          <motion.div
-            className="mt-8 flex flex-col gap-4 sm:flex-row"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.55, duration: 0.7 }}
-          >
-            <Link
-              to="projects"
-              smooth
-              duration={700}
-              offset={-72}
-              className="cursor-pointer rounded-md bg-gradient-to-r from-violet-300 via-sky-300 to-pink-300 px-6 py-3 text-center font-bold text-slate-950 transition hover:shadow-lg hover:shadow-sky-300/20"
+          <div className="px-6 md:px-10 pb-8">
+            <div className="-mt-20 mb-6 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+              <div className="relative h-40 w-40 rounded-full border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center">
+                {settings.profileImage?.url ? (
+                  <RemoteImage
+                    src={settings.profileImage.url}
+                    alt={settings.profileImage.alt || 'Kunal Suvo Saha profile photo'}
+                    priority
+                    sizes="160px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_24%,#ffffff_0_13%,transparent_14%),linear-gradient(145deg,#eef4ff_0%,#dce8ff_48%,#b8caf8_100%)]" />
+                    <div className="absolute top-9 h-14 w-14 rounded-full bg-[#0530ad]" />
+                    <div className="absolute bottom-6 h-24 w-28 rounded-t-full bg-[#0530ad]" />
+                    <div className="absolute bottom-0 h-12 w-full bg-white/45" />
+                    <div className="relative z-10 mt-14 text-3xl font-bold text-white tracking-wide">
+                      KS
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <SocialIcon href="https://github.com/kunalsuvosaha" icon={SiGithub} label="GitHub" />
+                <SocialIcon href="https://www.linkedin.com/in/kunalsaha07/" icon={FaLinkedin} label="LinkedIn" />
+                <SocialIcon href="mailto:kunalsuvosaha@gmail.com" icon={SiGmail} label="Email" />
+              </div>
+            </div>
+
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-wide text-linkedin mb-2">Full Stack Developer | MERN Stack | MCA</p>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-950 mb-4">
+                Kunal Suvo Saha
+              </h1>
+              <p className="text-lg text-slate-700 leading-relaxed mb-5">
+                I enjoy building responsive and interactive web applications with React, Next.js, and modern JavaScript. I’m passionate about creating user experiences that not only look good but also feel smooth, practical, and engaging.
+              </p>
+
+              <div className="flex flex-wrap gap-4 text-sm text-slate-600 mb-8">
+                <span className="inline-flex items-center gap-2">
+                  <FiBriefcase className="text-linkedin" /> Open to Opportunities
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <FiMapPin className="text-linkedin" /> India
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+            <a 
+              href="#projects" 
+              onClick={(e) => handleScrollTo(e, '#projects')}
+                className="glow-button bg-linkedin text-white px-6 py-3 rounded-md font-semibold hover:bg-linkedin-dark transition-colors"
             >
               View Projects
-            </Link>
-            <Link
-              to="contact"
-              smooth
-              duration={700}
-              offset={-72}
-              className="cursor-pointer rounded-md border border-white/15 bg-white/10 px-6 py-3 text-center font-bold text-white backdrop-blur transition hover:bg-white/15"
+            </a>
+            <a 
+              href="#contact" 
+              onClick={(e) => handleScrollTo(e, '#contact')}
+                className="border border-linkedin text-linkedin px-6 py-3 rounded-md font-semibold hover:bg-blue-50 transition-colors"
             >
-              Contact Me
-            </Link>
-          </motion.div>
-
-          <motion.div
-            className="mt-8 flex gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.65, duration: 0.65 }}
-          >
-            {socialLinks.map(({ label, href, icon: Icon }) => (
-              <a
-                key={label}
-                href={href}
-                aria-label={label}
-                target={href.startsWith('http') ? '_blank' : undefined}
-                rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                className="grid size-11 place-items-center rounded-md border border-white/10 bg-white/10 text-lg text-slate-100 transition hover:-translate-y-1 hover:border-sky-200/50 hover:text-sky-100"
-              >
-                <Icon />
-              </a>
-            ))}
-          </motion.div>
-        </motion.div>
-
-        <motion.div
-          className="glass-panel soft-ring relative mx-auto aspect-square w-full max-w-sm rounded-[2rem] p-5"
-          initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ delay: 0.35, duration: 0.8, ease: 'easeOut' }}
-        >
-          <div className="h-full rounded-[1.5rem] border border-white/10 bg-slate-950/70 p-6">
-            <div className="mb-8 flex gap-2">
-              <span className="size-3 rounded-full bg-pink-300" />
-              <span className="size-3 rounded-full bg-sky-300" />
-              <span className="size-3 rounded-full bg-violet-300" />
-            </div>
-            <div className="space-y-4 font-mono text-sm text-slate-300">
-              <p><span className="text-pink-200">const</span> developer = &#123;</p>
-              <p className="pl-4">name: <span className="text-sky-200">'Kunal'</span>,</p>
-              <p className="pl-4">focus: <span className="text-sky-200">'Full Stack'</span>,</p>
-              <p className="pl-4">bestAt: <span className="text-sky-200">'Problem solving'</span>,</p>
-              <p className="pl-4">stack: <span className="text-sky-200">'MERN'</span>,</p>
-              <p className="pl-4">mindset: <span className="text-sky-200">'Build and improve'</span></p>
-              <p>&#125;;</p>
-            </div>
+              Contact
+            </a>
+          </div>
           </div>
         </motion.div>
       </div>
@@ -148,4 +132,18 @@ function Hero() {
   );
 }
 
-export default Hero;
+function SocialIcon({ href, icon: Icon, label }) {
+  return (
+    <motion.a
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.9 }}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className="p-3 rounded-full border border-slate-200 bg-white text-slate-600 hover:text-linkedin hover:border-linkedin transition-colors"
+    >
+      <Icon size={24} />
+    </motion.a>
+  );
+}

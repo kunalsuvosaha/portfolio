@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f3f6f8;
+  --foreground: #1f2937;
+  --color-linkedin: #0530ad;
+  --color-linkedin-dark: #03227a;
+  --color-surface: #ffffff;
+  --color-muted: #64748b;
+  --color-border: #d8dee4;
+  --color-soft-panel: #eef4fb;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-linkedin: var(--color-linkedin);
+  --color-linkedin-dark: var(--color-linkedin-dark);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  background-image: linear-gradient(180deg, #eef4fb 0%, #f3f6f8 260px, #f3f6f8 100%);
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(to right, var(--color-linkedin), #315fda);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .glass-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  }
+  
+  .glass-card:hover {
+    border-color: rgba(10, 102, 194, 0.28);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  }
+
+  .glow-button {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .glow-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .glow-button:hover::before {
+    left: 100%;
+  }
+}
